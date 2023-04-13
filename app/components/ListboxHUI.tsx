@@ -9,7 +9,9 @@ const desafios = [
    { nome: 'Desafio 3', endereco: '/desafio3' },
    { nome: 'Desafio 4', endereco: '/desafio4' },
    { nome: 'Desafio 5', endereco: '/desafio5' },
+   { nome: 'Desafio 6', endereco: '/desafio6' },
    { nome: 'Desafio 7', endereco: '/desafio7' },
+   { nome: 'Desafio 8', endereco: '/desafio8' },
 ];
 
 export default function ListboxHUI() {
@@ -44,7 +46,7 @@ export default function ListboxHUI() {
                            key={index}
                            className={({ active }) =>
                               `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                                 active ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
+                                 active ? 'bg-blue-200 text-blue-900' : 'text-gray-900'
                               }`
                            }
                            value={desafio}

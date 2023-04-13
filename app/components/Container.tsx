@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import ButtonDesafios from './ButtonDesafios';
@@ -7,17 +7,30 @@ import ListboxHUI from './ListboxHUI';
 const Container = ({ enunciado, children }: { enunciado: string; children: ReactNode }) => {
    const navigate = useNavigate();
    const location = useLocation();
+   const areaListener = new AbortController();
+
+   useEffect(() => {
+      const arrowNavigate = (event: KeyboardEvent) => {
+         if (event.code === 'ArrowLeft') {
+            areaListener.abort();
+            desafioAnterior();
+         }
+         if (event.code === 'ArrowRight') {
+            areaListener.abort();
+            proximoDesafio();
+         }
+      };
+
+      window.addEventListener('keyup', arrowNavigate, { signal: areaListener.signal });
+   });
 
    function desafioAnterior() {
       switch (location.pathname) {
          case '/':
-            navigate('/desafio7');
+            navigate('/desafio8');
             return;
          case '/desafio2':
             navigate('/');
-            return;
-         case '/desafio7':
-            navigate('/desafio5');
             return;
       }
 
@@ -30,11 +43,8 @@ const Container = ({ enunciado, children }: { enunciado: string; children: React
          case '/':
             navigate('/desafio2');
             return;
-         case '/desafio7':
+         case '/desafio8':
             navigate('/');
-            return;
-         case '/desafio5':
-            navigate('/desafio7');
             return;
       }
 
@@ -43,7 +53,7 @@ const Container = ({ enunciado, children }: { enunciado: string; children: React
    }
 
    return (
-      <div className="flex flex-wrap h-full w-auto bg-blue-50 p-4 rounded gap-4">
+      <div className="flex flex-wrap h-full w-auto bg-blue-100 p-4 rounded gap-4">
          <div className="flex flex-col justify-between h-full w-full gap-4">
             <div className="flex flex-col flex-wrap gap-2">
                <p className="font-semibold underline">{enunciado}</p>
