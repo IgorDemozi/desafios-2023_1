@@ -1,73 +1,89 @@
-import { ReactNode, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { usePathname, useRouter } from 'next/navigation'
+import { ReactNode, useEffect, useState } from 'react'
 
-import ButtonDesafios from './ButtonDesafios';
-import ListboxHUI from './ListboxHUI';
+import Link from 'next/link'
+import { desafios } from '../desafiosInfo'
+import ListboxHUI from './ListboxHUI'
+import SelectDesafios, { option } from './SelectDesafios'
 
 const Container = ({ enunciado, children }: { enunciado: string; children: ReactNode }) => {
-   const navigate = useNavigate();
-   const location = useLocation();
-   const areaListener = new AbortController();
+  const router = useRouter()
+  const index = desafios.findIndex(item => item.endereco === usePathname())
+  const corAtual = document.documentElement.classList.toString().split(' ').pop()?.split('-').pop()
+  const [cor, setCor] = useState(corAtual)
 
-   useEffect(() => {
-      const arrowNavigate = (event: KeyboardEvent) => {
-         if (event.code === 'ArrowLeft') {
-            areaListener.abort();
-            desafioAnterior();
-         }
-         if (event.code === 'ArrowRight') {
-            areaListener.abort();
-            proximoDesafio();
-         }
-      };
+  const cores = ['Azul', 'Verde', 'Vermelho', 'Amarelo']
+  const options: option[] = cores.map(item => {
+    return { value: item, texto: item }
+  })
 
-      window.addEventListener('keyup', arrowNavigate, { signal: areaListener.signal });
-   });
+  let linkDesafioAnterior = ''
+  let linkProximoDesafio = ''
 
-   function desafioAnterior() {
-      switch (location.pathname) {
-         case '/':
-            navigate('/desafio8');
-            return;
-         case '/desafio2':
-            navigate('/');
-            return;
+  if (index === 0) {
+    linkDesafioAnterior = desafios[desafios.length - 1].endereco
+  } else {
+    linkDesafioAnterior = desafios[index - 1].endereco
+  }
+
+  if (index >= desafios.length - 1) {
+    linkProximoDesafio = desafios[0].endereco
+  } else {
+    linkProximoDesafio = desafios[index + 1].endereco
+  }
+
+  useEffect(() => {
+    if (cor === '') setCor('Azul')
+
+    const arrowNavigate = (event: KeyboardEvent) => {
+      if (event.target === event.currentTarget && (event.code === 'ArrowLeft' || event.code === 'KeyA')) {
+        router.push(linkDesafioAnterior)
       }
-
-      let n = Number(location.pathname.split('')[8]);
-      navigate(`/desafio${n - 1}`);
-   }
-
-   function proximoDesafio() {
-      switch (location.pathname) {
-         case '/':
-            navigate('/desafio2');
-            return;
-         case '/desafio8':
-            navigate('/');
-            return;
+      if (event.target === event.currentTarget && (event.code === 'ArrowRight' || event.code === 'KeyD')) {
+        router.push(linkProximoDesafio)
       }
+    }
 
-      let n = Number(location.pathname.split('')[8]);
-      navigate(`/desafio${n + 1}`);
-   }
+    document.body.addEventListener('keyup', arrowNavigate)
 
-   return (
-      <div className="flex flex-wrap h-full w-auto bg-blue-100 p-4 rounded gap-4">
-         <div className="flex flex-col justify-between h-full w-full gap-4">
-            <div className="flex flex-col flex-wrap gap-2">
-               <p className="font-semibold underline">{enunciado}</p>
-               <div className="flex gap-3 flex-wrap">{children}</div>
-            </div>
+    return () => {
+      document.body.removeEventListener('keyup', arrowNavigate)
+    }
+  }, [])
 
-            <div className="flex justify-between w-full">
-               <ButtonDesafios onClick={desafioAnterior}>Anterior</ButtonDesafios>
-               <ListboxHUI />
-               <ButtonDesafios onClick={proximoDesafio}>Próximo</ButtonDesafios>
-            </div>
-         </div>
+  useEffect(() => {
+    const temaAtual = document.documentElement.classList.toString().split(' ').pop()
+    if (temaAtual) document.documentElement.classList.replace(temaAtual, `theme-${cor}`)
+  }, [cor])
+
+  return (
+    <div className="box-border flex h-full min-h-[560px] w-full flex-col justify-between gap-4">
+      <div className="flex flex-col flex-wrap gap-2">
+        <p className="font-semibold underline">{enunciado}</p>
+        <div className="flex flex-wrap gap-3">{children}</div>
       </div>
-   );
-};
 
-export default Container;
+      <div className="grid w-full grid-cols-2 grid-rows-2 gap-2 min-[654px]:flex min-[654px]:flex-wrap min-[654px]:items-center min-[654px]:justify-between">
+        <Link
+          href={linkDesafioAnterior}
+          className="col-start-1 row-start-2 flex w-fit items-center rounded bg-myTheme-Button p-1 px-4 text-center hover:bg-myTheme-ButtonHover hover:ring-2 hover:ring-inset hover:ring-black"
+        >
+          <span>Anterior</span>
+        </Link>
+
+        <ListboxHUI />
+
+        <SelectDesafios label="Tema:" value={cor!} onChange={setCor} options={options} />
+
+        <Link
+          href={linkProximoDesafio}
+          className="flex w-fit items-center justify-self-end rounded bg-myTheme-Button p-1 px-4 hover:bg-myTheme-ButtonHover hover:ring-2 hover:ring-inset hover:ring-black"
+        >
+          <span>Próximo</span>
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+export default Container

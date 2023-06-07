@@ -1,3 +1,4 @@
+'use client';
 import Swal from "sweetalert2";
 
 import ButtonDesafios from "../components/ButtonDesafios";

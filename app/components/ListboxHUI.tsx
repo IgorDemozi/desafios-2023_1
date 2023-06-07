@@ -1,34 +1,26 @@
-import { Fragment, useEffect, useState } from 'react';
-import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Listbox, Transition } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { usePathname, useRouter } from 'next/navigation'
+import { Fragment, useEffect, useState } from 'react'
 
-const desafios = [
-   { nome: 'Desafio 1', endereco: '/' },
-   { nome: 'Desafio 2', endereco: '/desafio2' },
-   { nome: 'Desafio 3', endereco: '/desafio3' },
-   { nome: 'Desafio 4', endereco: '/desafio4' },
-   { nome: 'Desafio 5', endereco: '/desafio5' },
-   { nome: 'Desafio 6', endereco: '/desafio6' },
-   { nome: 'Desafio 7', endereco: '/desafio7' },
-   { nome: 'Desafio 8', endereco: '/desafio8' },
-];
+import { desafios } from '../desafiosInfo'
 
 export default function ListboxHUI() {
-   const navigate = useNavigate();
-   const location = useLocation();
-   const selecaoInicial = desafios.find(item => item.endereco === location.pathname);
-   const [desafioSelecionado, setDesafioSelecionado] = useState(selecaoInicial);
+   const router = useRouter()
+   const selecaoInicial = desafios.find(item => item.endereco === usePathname())
+   const [desafioSelecionado, setDesafioSelecionado] = useState(selecaoInicial)
 
    useEffect(() => {
-      if (desafioSelecionado) navigate(desafioSelecionado.endereco);
-   }, [desafioSelecionado]);
+      if (desafioSelecionado) router.push(desafioSelecionado.endereco)
+   }, [desafioSelecionado])
 
    return (
-      <div className="w-72">
+      <div className="w-52">
          <Listbox value={desafioSelecionado} onChange={setDesafioSelecionado}>
-            <div className="relative mt-1">
-               <Listbox.Button className="relative w-full rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
+            <div className="relative">
+               <Listbox.Button
+                  className={`relative w-full rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-[0_5px_20px_rgba(134,136,162,0.212)] focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-myTheme-ListBoxButton sm:text-sm`}
+               >
                   <span className="block truncate">{desafioSelecionado!.nome}</span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                      <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -40,13 +32,15 @@ export default function ListboxHUI() {
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                >
-                  <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm bottom-full ">
+                  <Listbox.Options className="absolute bottom-full mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm ">
                      {desafios.map((desafio, index) => (
                         <Listbox.Option
                            key={index}
                            className={({ active }) =>
                               `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                                 active ? 'bg-blue-200 text-blue-900' : 'text-gray-900'
+                                 active
+                                    ? `bg-myTheme-ListBoxOptionActive text-myTheme-ListBoxOptionText`
+                                    : 'text-gray-900'
                               }`
                            }
                            value={desafio}
@@ -57,7 +51,9 @@ export default function ListboxHUI() {
                                     {desafio.nome}
                                  </span>
                                  {selected ? (
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
+                                    <span
+                                       className={`absolute inset-y-0 left-0 flex items-center pl-3 text-myTheme-ListBoxCheckIcon`}
+                                    >
                                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
                                     </span>
                                  ) : null}
@@ -70,5 +66,5 @@ export default function ListboxHUI() {
             </div>
          </Listbox>
       </div>
-   );
+   )
 }

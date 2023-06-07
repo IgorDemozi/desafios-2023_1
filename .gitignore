@@ -2,3 +2,4 @@
 /.next/
 /.vscode
 next-env.d.ts
+.prettierrc

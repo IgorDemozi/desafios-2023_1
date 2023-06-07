@@ -1,20 +1,22 @@
-import { MouseEventHandler, ReactNode } from 'react';
+'use client'
+
+import { MouseEventHandler, ReactNode } from 'react'
 
 const ButtonDesafios = ({
    children,
    onClick,
 }: {
-   children: ReactNode;
-   onClick?: MouseEventHandler<HTMLButtonElement>;
+   children: ReactNode
+   onClick?: MouseEventHandler<HTMLButtonElement>
 }) => {
    return (
       <button
-         className="bg-blue-400 p-1 px-4 rounded hover:bg-blue-500 hover:ring-2 hover:ring-black hover:ring-inset"
+         className="rounded bg-myTheme-Button p-1 px-4 hover:bg-myTheme-ButtonHover hover:ring-2 hover:ring-inset hover:ring-black"
          onClick={onClick}
       >
          {children}
       </button>
-   );
-};
+   )
+}
 
-export default ButtonDesafios;
+export default ButtonDesafios
